@@ -19,11 +19,17 @@ impl Token {
         &self.value
     }
     pub fn get_val_mut(&mut self) -> &mut String {
-        &self.value
+        &mut self.value
     }
 }
 
 struct LexerRule(Arc<str>);
+
+impl LexerRule {
+    pub fn new(keyword: &'static str) -> Self {
+        Self(Arc::new(*keyword))
+    }
+}
 
 pub struct LuthersLexer {
     source: String,
@@ -34,5 +40,13 @@ pub struct LuthersLexer {
 }
 
 impl LuthersLexer {
-
+    pub fn new(source: String, file_id: usize) -> Self {
+        Self {
+            source,
+            source_pointer: 0,
+            file_id,
+            token_stream: Vec::new(),
+            rules: Vec::new(),
+        }
+    }
 }
