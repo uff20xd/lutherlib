@@ -1,12 +1,13 @@
-pub struct Token {
-    value: String,
+#[derive(Debug, Clone, Copy)]
+pub struct Token<'a> {
+    value: &'a str,
     start: usize,
     end: usize,
     file_id: usize,
 }
 
 impl Token {
-    pub fn new(value: String, start: usize, end: usize, file_id: usize) {
+    pub fn new(value: &str, start: usize, end: usize, file_id: usize) {
         Self {
             value,
             start,
@@ -14,39 +15,20 @@ impl Token {
             file_id,
         }
     }
-
-    pub fn get_val(&self) -> &String {
-        &self.value
-    }
-    pub fn get_val_mut(&mut self) -> &mut String {
-        &mut self.value
+    pub fn get_val(&self) -> &str {
+        self.value
     }
 }
 
-struct LexerRule(Arc<str>);
-
-impl LexerRule {
-    pub fn new(keyword: &'static str) -> Self {
-        Self(Arc::new(*keyword))
-    }
+#[derive(Debug, Clone)]
+pub struct TokenGroup {
+    tokens: Vec<Token>,
 }
 
-pub struct LuthersLexer {
-    source: String,
-    source_pointer: usize,
-    file_id: usize,
-    token_stream: Vec<Token>,
-    rules: Vec<LexerRule>,
-}
-
-impl LuthersLexer {
-    pub fn new(source: String, file_id: usize) -> Self {
-        Self {
-            source,
-            source_pointer: 0,
-            file_id,
-            token_stream: Vec::new(),
-            rules: Vec::new(),
-        }
-    }
+struct LexerLuther {
+    buffer: Vec<Token>,
+    group_stream: Vec<TokenGroup>,
+    start_pointer: usize,
+    end_pointer: usize,
+    save_state: (usize, usize),
 }
