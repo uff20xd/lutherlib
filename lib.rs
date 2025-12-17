@@ -6,8 +6,8 @@ pub struct Token<'a> {
     file_id: usize,
 }
 
-impl Token {
-    pub fn new(value: &str, start: usize, end: usize, file_id: usize) {
+impl<'a> Token<'a> {
+    pub fn new(value: &'a str, start: usize, end: usize, file_id: usize) -> Self {
         Self {
             value,
             start,
@@ -21,23 +21,25 @@ impl Token {
 }
 
 #[derive(Debug, Clone)]
-pub struct TokenGroup {
-    tokens: Vec<Token>,
+pub struct TokenGroup<'a> {
+    tokens: Vec<Token<'a>>,
 }
 
-struct LexerLuther {
+struct LexerLuther<'a> {
     source: String,
-    buffer: Vec<Token>,
-    group_stream: Vec<TokenGroup>,
+    char_source: Vec<char>,
+    buffer: Vec<Token<'a>>,
+    group_stream: Vec<TokenGroup<'a>>,
     start_pointer: usize,
     end_pointer: usize,
     save_state: (usize, usize),
 }
 
-impl LexerLuther {
+impl<'a> LexerLuther<'a> {
     fn new(source: String) -> Self {
         let new = Self {
-            source: String,
+            source: source.clone(),
+            char_source: source.chars().collect(),
             buffer: Vec::new(),
             group_stream: Vec::new(),
             start_pointer: 0,
@@ -48,12 +50,12 @@ impl LexerLuther {
     }
     fn next(&mut self) -> Option<char> {
         self.end_pointer += 1;
-        if !(self.source.len() >= end_pointer - 1) {
-
+        if !(self.source.len() >= self.end_pointer - 1) {
+            return Some(self.char_source[self.end_pointer - 1]);
         }
         None
     }
     fn next_nth(&mut self, n: usize) -> Option<&[char]> {
-
+        todo!();
     }
 }
